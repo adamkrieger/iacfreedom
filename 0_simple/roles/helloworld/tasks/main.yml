@@ -1,0 +1,4 @@
+---
+- name: This is a task, they runs sequentially
+  debug:
+    msg: Deploying the Product

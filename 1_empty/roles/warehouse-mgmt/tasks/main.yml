@@ -1,0 +1,8 @@
+---
+- name: "Deploying Warehouse Management System to {{ env_name }}"
+  debug:
+    msg: "{{ env_name }}"
+
+- name: "Configure the Application with the Product DB Credentials"
+  debug:
+    msg: "{{ product_db_password }}"

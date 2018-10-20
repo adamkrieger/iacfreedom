@@ -1,0 +1,3 @@
+---
+- import_playbook: storefront.yml
+- import_playbook: warehouse-mgmt.yml
