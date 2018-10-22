@@ -13,6 +13,8 @@ RUN apt-get update && apt-get install -y \
 ENV EDITOR vim
 
 RUN pip install --upgrade pip
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
 VOLUME /opt/ansible
 WORKDIR /opt/ansible

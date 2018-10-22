@@ -1,0 +1,161 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Resources for warehouse management product to make use of.
+
+Resources:
+
+# Networking
+
+  WarehouseManagementVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: "10.1.0.0/16"
+      Tags:
+      - Key: Name
+        Value: "{{ env_name }}-warehousemgmt-vpc"
+
+  WarehouseManagementSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: "10.1.1.0/24"
+      VpcId: !Ref WarehouseManagementVPC
+      Tags:
+      - Key: Name
+        Value: "{{ env_name }}-warehousemgmt-subnet-a"
+
+  WarehouseManagementSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: "10.1.2.0/24"
+      VpcId: !Ref WarehouseManagementVPC
+      Tags:
+      - Key: Name
+        Value: "{{ env_name }}-warehousemgmt-subnet-b"
+
+  WarehouseManagementSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: "{{ env_name }}-warehousemgmt-sg"
+      GroupDescription: "{{ env_name }} warehouse management resources"
+      VpcId: !Ref WarehouseManagementVPC
+
+# Product List Lambda Function
+
+  ProductListRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: "{{ env_name }}-product-list-role"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: Allow
+          Action:
+          - sts:AssumeRole
+          Principal: { "Service": "lambda.amazonaws.com" }
+
+  ProductListFunctionPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: "{{ env_name }}-product-list-policy"
+      Roles:
+      - Ref: "ProductListRole"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: "Allow"
+          Action:
+          - "logs:CreateLogGroup"
+          - "logs:CreateLogStream"
+          - "logs:PutLogEvents"
+          Resource: "arn:aws:logs:*:*:*"
+        - Effect: "Allow"
+          Action:
+          - "ec2:CreateNetworkInterface"
+          - "ec2:DescribeNetworkInterfaces"
+          - "ec2:DeleteNetworkInterface"
+          Resource: "*"
+
+  ProductListFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: "{{ env_name }}-product-list-function"
+      Handler: "main"
+      Runtime: "go1.x"
+      Code:
+        S3Bucket: "{{ iacfreedom_artifact_bucket }}"
+        S3Key: "productlistfunction/{{ productlistfunction_version }}/productlistfunction.zip"
+      Role: !GetAtt ProductListRole.Arn
+      Timeout: 30
+      VpcConfig:
+        SubnetIds:
+        - !Ref WarehouseManagementSubnetA
+        - !Ref WarehouseManagementSubnetB
+        SecurityGroupIds:
+        - !Ref WarehouseManagementSecurityGroup
+
+# Warehouse Management Rest API
+
+  {{ warehousemgmt_restapi_resourcename }}:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: "{{ env_name }}-warehousemgmt-api"
+
+# Warehouse Management Rest API - /products
+
+  ProductsResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref WarehouseManagementRestApi
+      ParentId: !GetAtt WarehouseManagementRestApi.RootResourceId
+      PathPart: "products"
+
+  ProductsProductIDResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId:
+        Ref: WarehouseManagementRestApi
+      ParentId:
+        Ref: ProductsResource
+      PathPart: "{productID}"
+
+  ProductsProductIDGetMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      OperationName: "{{ env_name }}-products-productid-get"
+      ApiKeyRequired: False
+      RestApiId: !Ref WarehouseManagementRestApi
+      ResourceId: !Ref ProductsProductIDResource
+      HttpMethod: GET
+      RequestParameters:
+        method.request.path.productid: true
+      AuthorizationType: "NONE"
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub "arn:aws:apigateway:{{ aws_region }}:lambda:path/2015-03-31/functions/${ProductListFunction.Arn}/invocations"
+        RequestParameters:
+          integration.request.path.productid: "'true'"
+
+# Warehouse Management -> Product Function Permission
+
+  ProductListLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt ProductListFunction.Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:aws:execute-api:{{ aws_region }}:${AWS::AccountId}:${WarehouseManagementRestApi}/*"
+
+# Warehouse Management API - Deployments 
+
+  WarehouseManagementDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn: ProductsProductIDGetMethod
+    Properties:
+      RestApiId: !Ref WarehouseManagementRestApi
+
+  WarehouseManagementProdStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      StageName: "api"
+      RestApiId: !Ref WarehouseManagementRestApi
+      DeploymentId: !Ref WarehouseManagementDeployment

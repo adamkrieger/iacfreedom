@@ -1,0 +1,4 @@
+---
+aws_region: "us-east-1"
+
+iacfreedom_artifact_bucket: "bin-iacfreedom"

@@ -1,0 +1,9 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Resources for iacfreedom platform to make use of.
+
+Resources:
+
+  IACFreedomArtifactBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: "{{ iacfreedom_artifact_bucket }}"

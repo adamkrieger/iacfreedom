@@ -1,0 +1,6 @@
+---
+- name: Deploy Resources Stack
+  cloudformation:
+    stack_name: "iacfreedom-resources"
+    region: "{{ aws_region }}"
+    template_body: "{{ lookup('template', 'iacfreedom_resources.j2.yml', convert_data=False) }}"

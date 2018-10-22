@@ -1,0 +1,2 @@
+warehousemgmt_stack_name: "{{ env_name }}-warehousemgmt-resources"
+warehousemgmt_restapi_resourcename: "WarehouseManagementRestApi"

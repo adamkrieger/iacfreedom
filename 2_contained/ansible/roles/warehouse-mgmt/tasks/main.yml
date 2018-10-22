@@ -1,8 +1,21 @@
 ---
-- name: "Deploying Warehouse Management System to {{ env_name }}"
-  debug:
-    msg: "{{ env_name }}"
+- name: Deploy Warehouse-Management Stack
+  cloudformation:
+    stack_name: "{{ warehousemgmt_stack_name }}"
+    region: "{{ aws_region }}"
+    template_body: "{{ lookup('template', 'warehousemgmt_resources.j2.yml', convert_data=False) }}"
 
-- name: "Configure the Application with the Product DB Credentials"
-  debug:
-    msg: "{{ product_db_password }}"
+- cloudformation_facts:
+    stack_name: "{{ warehousemgmt_stack_name }}"
+    stack_resources: true
+  register: my_stack
+  environment:
+    AWS_REGION: '{{ aws_region }}'
+
+- set_fact:
+    warehousemgmt_restapi_id: "{{ my_stack.ansible_facts.cloudformation[warehousemgmt_stack_name].stack_resources[warehousemgmt_restapi_resourcename] }}"
+
+- name: Deploy WarehouseMgmt API Gateway
+  command: "aws apigateway create-deployment --region {{ aws_region }} --stage-name api --rest-api-id {{ warehousemgmt_restapi_id }}"
+  environment:
+    AWS_REGION: '{{ aws_region }}'

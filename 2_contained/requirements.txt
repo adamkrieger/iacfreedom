@@ -1,0 +1,6 @@
+#pip requirements used by DockerFile step
+
+boto==2.48.0
+boto3==1.9.28
+awscli==1.16.38
+docker-py==1.10.6

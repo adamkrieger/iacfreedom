@@ -1,4 +1,5 @@
 ansible-playbook \
+	--extra-vars @./env_vars/all_envs.yml \
 	--extra-vars @./env_vars/prod.yml \
 	--extra-vars @./env_vars/prod.vault \
 	--vault-id vault-keys/prod.key \

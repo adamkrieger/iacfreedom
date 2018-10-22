@@ -8,7 +8,9 @@
 
 1. Install Docker
 2. Run `docker_build.sh`
-3. Push the image wherever, or run locally
+3. Set your AWS configuration variables:
+    - `AWS_ACCESS_KEY_ID`
+    - `AWS_SECRET_ACCESS_KEY`
 
 ## Run
 
