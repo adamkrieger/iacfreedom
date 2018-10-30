@@ -2,3 +2,5 @@
 env_name: "dev"
 
 productlistfunction_version: "1.0.1"
+
+storefront_instance_size: "t2.micro"

@@ -1,4 +1,0 @@
----
-- name: "Deploying Storefront System to {{ env_name }}"
-  debug:
-    msg: "{{ env_name }}"

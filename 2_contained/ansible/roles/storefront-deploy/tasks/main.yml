@@ -1,0 +1,12 @@
+---
+- name: "Deploying storefront to {{ env_name }}"
+
+# Install something with apt
+
+# Copy app binary to destination
+
+# Copy systemd or service files
+
+# Start Service
+
+# Wait.. ping active service

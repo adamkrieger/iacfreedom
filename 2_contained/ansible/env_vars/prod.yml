@@ -2,3 +2,5 @@
 env_name: "prod"
 
 productlistfunction_version: "1.0.0"
+
+storefront_instance_size: "t2.large"

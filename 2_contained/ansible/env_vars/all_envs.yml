@@ -1,4 +1,8 @@
 ---
 aws_region: "us-east-1"
+aws_ec2_keyname: "adamkriegerca_nvirg_iac"
 
 iacfreedom_artifact_bucket: "bin-iacfreedom"
+
+storefront_instance_name: "{{ env_name }}-storefront"
+storefront_instance_ami: "ami-0e757274744ad3369"

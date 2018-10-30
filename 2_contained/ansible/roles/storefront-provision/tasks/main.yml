@@ -1,0 +1,15 @@
+---
+- name: "Preparing Storefront Infrastructure {{ env_name }}"
+  debug:
+    msg: "{{ env_name }}"
+
+- name: "Preparing storefront infrastructure"
+  ec2:
+    key_name: "{{ aws_ec2_keyname }}"
+    instance_type: "{{ storefront_instance_size }}"
+    image: "{{ storefront_instance_ami }}"
+    wait: yes
+    count: 1
+    instance_tags:
+        Name: "{{ storefront_instance_name }}"
+        Env: "{{ env_name }}"
