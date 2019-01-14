@@ -1,0 +1,3 @@
+#pip requirements used in Docker container build
+
+awscli==1.16.87

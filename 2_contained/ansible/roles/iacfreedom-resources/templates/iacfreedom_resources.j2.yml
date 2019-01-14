@@ -7,3 +7,8 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: "{{ iacfreedom_artifact_bucket }}"
+
+  IACFreedomGoSvcBuilderImageRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: "golang_svc_buildenv"
