@@ -8,7 +8,44 @@ Resources:
     Properties:
       BucketName: "{{ iacfreedom_artifact_bucket }}"
 
+  IACFreedomBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: "iacFreedomBuildRole"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal: { "Service": "codebuild.amazonaws.com" }
+
+  # IACFreedomBuildPolicy:
+  #   Type: AWS::IAM::Policy
+  #   Properties:
+  #     PolicyName: "iacFreedomBuildPolicy"
+  #     Roles:
+  #       - !Ref IACFreedomBuildRole
+  #     PolicyDocument:
+  #       Version: "2012-10-17"
+  #       Statement:
+  #         - Effect: "Allow"
+  #           Action:
+  #             - "" 
+  #           Resource:
+  #             - "arn:aws:logs:*:*:log-group:/aws/codebuild/orderServiceBuildTest"
+  #             - "arn:aws:logs:*:*:log-group:/aws/codebuild/orderServiceBuildTest:*"
+  #         - Effect: "Allow"
+  #           Action:
+  #             - "ecr:BatchGetImage"
+  #           Resource:
+  #             - "arn:aws:ecr:*:*:repository/*"
+
   IACFreedomGoSvcBuilderImageRepo:
     Type: AWS::ECR::Repository
     Properties:
       RepositoryName: "golang_svc_buildenv"
+
+  # IACFreedomOrderServiceBuildTask:
+  #   Type: AWS::CodeBuild::Project
+  #   Properties:
