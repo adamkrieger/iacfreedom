@@ -11,3 +11,4 @@ phases:
       - ./build.sh
       - ./build_image.sh
       - ./tag_push.sh
+      - cat ~/.docker/config.json
