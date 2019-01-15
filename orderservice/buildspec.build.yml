@@ -5,4 +5,4 @@ phases:
     commands:
       - cd orderservice
       - env
-      - ./build.sh default
+      - ./build.sh
