@@ -20,32 +20,57 @@ Resources:
               - sts:AssumeRole
             Principal: { "Service": "codebuild.amazonaws.com" }
 
-  # IACFreedomBuildPolicy:
-  #   Type: AWS::IAM::Policy
-  #   Properties:
-  #     PolicyName: "iacFreedomBuildPolicy"
-  #     Roles:
-  #       - !Ref IACFreedomBuildRole
-  #     PolicyDocument:
-  #       Version: "2012-10-17"
-  #       Statement:
-  #         - Effect: "Allow"
-  #           Action:
-  #             - "" 
-  #           Resource:
-  #             - "arn:aws:logs:*:*:log-group:/aws/codebuild/orderServiceBuildTest"
-  #             - "arn:aws:logs:*:*:log-group:/aws/codebuild/orderServiceBuildTest:*"
-  #         - Effect: "Allow"
-  #           Action:
-  #             - "ecr:BatchGetImage"
-  #           Resource:
-  #             - "arn:aws:ecr:*:*:repository/*"
+  IACFreedomBuildPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: "iacFreedomBuildPolicy"
+      Roles:
+        - !Ref IACFreedomBuildRole
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action:
+              - "logs:CreateLogGroup"
+              - "logs:CreateLogStream"
+              - "logs:PutLogEvents"
+            Resource:
+              - "arn:aws:logs:*:*:log-group:/aws/codebuild/orderServiceBuildTaskCF"
+              - "arn:aws:logs:*:*:log-group:/aws/codebuild/orderServiceBuildTaskCF:*"
+          # - Effect: "Allow"
+          #   Action:
+          #     - "ecr:BatchGetImage"
+          #     - "ecr:GetDownloadUrlForLayer"
+          #     - "ecr:BatchCheckLayerAvailability"
+          #   Resource:
+          #     - "arn:aws:ecr:*:*:repository/*"
 
   IACFreedomGoSvcBuilderImageRepo:
     Type: AWS::ECR::Repository
     Properties:
       RepositoryName: "golang_svc_buildenv"
+      RepositoryPolicyText:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action:
+              - "ecr:BatchGetImage"
+              - "ecr:GetDownloadUrlForLayer"
+              - "ecr:BatchCheckLayerAvailability"
+            Principal: { "Service": "codebuild.amazonaws.com" }
 
-  # IACFreedomOrderServiceBuildTask:
-  #   Type: AWS::CodeBuild::Project
-  #   Properties:
+  IACFreedomOrderServiceBuildTask:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: orderServiceBuildTaskCF
+      ServiceRole: !Ref IACFreedomBuildRole
+      Source:
+        Type: "github"
+        Location: "https://github.com/adamkrieger/iacfreedom.git"
+        BuildSpec: "./orderservice/buildspec.build.yml"
+      Environment:
+        ComputeType: "BUILD_GENERAL1_SMALL"
+        Type: "LINUX_CONTAINER"
+        Image: !Sub "${AWS::AccountId}.dkr.ecr.us-east-1.amazonaws.com/golang_svc_buildenv:1.10"
+      Artifacts:
+        Type: "NO_ARTIFACTS"
