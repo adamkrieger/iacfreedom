@@ -76,7 +76,26 @@ Resources:
       Environment:
         ComputeType: "BUILD_GENERAL1_SMALL"
         Type: "LINUX_CONTAINER"
-        Image: !Sub "${AWS::AccountId}.dkr.ecr.us-east-1.amazonaws.com/golang_svc_buildenv:1.10"
+        Image: !Sub "${AWS::AccountId}.dkr.ecr.us-east-1.amazonaws.com/golang_svc_buildenv:1.11"
         PrivilegedMode: true
       Artifacts:
         Type: "NO_ARTIFACTS"
+
+####################################
+### Order Service Infrastructure ###
+####################################
+
+  IACFreedomOrderServiceImageRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: "iacf_order_service"
+      RepositoryPolicyText:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action:
+              - "ecr:PutImage"
+              - "ecr:InitiateLayerUpload"
+              - "ecr:UploadLayerPart"
+              - "ecr:CompleteLayerUpload"
+            Principal: { "Service": "codebuild.amazonaws.com" }

@@ -1,4 +1,4 @@
-FROM alpine:3.8
+FROM docker:18.09-dind
 
 COPY requirements.txt .
 
