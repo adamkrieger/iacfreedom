@@ -30,6 +30,11 @@ Resources:
         Version: "2012-10-17"
         Statement:
           - Effect: "Allow"
+            Action: 
+              - "s3:PutObject"
+            Resource:
+              - "arn:aws:s3:::bin-iacfreedom/*"
+          - Effect: "Allow"
             Action:
               - "logs:CreateLogGroup"
               - "logs:CreateLogStream"
@@ -72,5 +77,6 @@ Resources:
         ComputeType: "BUILD_GENERAL1_SMALL"
         Type: "LINUX_CONTAINER"
         Image: !Sub "${AWS::AccountId}.dkr.ecr.us-east-1.amazonaws.com/golang_svc_buildenv:1.10"
+        PrivilegedMode: true
       Artifacts:
         Type: "NO_ARTIFACTS"

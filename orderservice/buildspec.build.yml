@@ -6,3 +6,5 @@ phases:
       - cd orderservice
       - env
       - ./build.sh
+      - ls -al
+      - ./build_image.sh
