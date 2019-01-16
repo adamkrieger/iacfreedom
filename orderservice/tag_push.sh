@@ -7,6 +7,7 @@ docker tag iacf_order_service:1.0.0 $AWS_ACCT_NUM.dkr.ecr.us-east-1.amazonaws.co
 
 echo Push Image to AWS ECR Repository...
 
+$(aws ecr get-login --region us-east-1)
 docker push $AWS_ACCT_NUM.dkr.ecr.us-east-1.amazonaws.com/iacf_order_service:1.0.0
 
 echo Done
