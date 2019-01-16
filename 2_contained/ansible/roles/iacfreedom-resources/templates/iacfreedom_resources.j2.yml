@@ -42,13 +42,14 @@ Resources:
             Resource:
               - "arn:aws:logs:*:*:log-group:/aws/codebuild/orderServiceBuildTaskCF"
               - "arn:aws:logs:*:*:log-group:/aws/codebuild/orderServiceBuildTaskCF:*"
-          # - Effect: "Allow"
-          #   Action:
-          #     - "ecr:BatchGetImage"
-          #     - "ecr:GetDownloadUrlForLayer"
-          #     - "ecr:BatchCheckLayerAvailability"
-          #   Resource:
-          #     - "arn:aws:ecr:*:*:repository/*"
+          - Effect: "Allow"
+            Action:
+              - "ecr:GetAuthorizationToken"
+              # - "ecr:BatchGetImage"
+              # - "ecr:GetDownloadUrlForLayer"
+              # - "ecr:BatchCheckLayerAvailability"
+            Resource:
+              - "*"
 
   IACFreedomGoSvcBuilderImageRepo:
     Type: AWS::ECR::Repository
