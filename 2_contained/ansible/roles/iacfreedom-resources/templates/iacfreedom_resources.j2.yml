@@ -45,11 +45,16 @@ Resources:
           - Effect: "Allow"
             Action:
               - "ecr:GetAuthorizationToken"
-              # - "ecr:BatchGetImage"
-              # - "ecr:GetDownloadUrlForLayer"
-              # - "ecr:BatchCheckLayerAvailability"
             Resource:
               - "*"
+          - Effect: "Allow"
+            Action:
+              - "ecr:PutImage"
+              - "ecr:InitiateLayerUpload"
+              - "ecr:UploadLayerPart"
+              - "ecr:CompleteLayerUpload"
+            Resource:
+              - "arn:aws:ecr:*:*:repository/*"
 
   IACFreedomGoSvcBuilderImageRepo:
     Type: AWS::ECR::Repository
@@ -90,13 +95,13 @@ Resources:
     Type: AWS::ECR::Repository
     Properties:
       RepositoryName: "iacf_order_service"
-      RepositoryPolicyText:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: "Allow"
-            Action:
-              - "ecr:PutImage"
-              - "ecr:InitiateLayerUpload"
-              - "ecr:UploadLayerPart"
-              - "ecr:CompleteLayerUpload"
-            Principal: { "Service": "codebuild.amazonaws.com" }
+      # RepositoryPolicyText:
+      #   Version: "2012-10-17"
+      #   Statement:
+      #     - Effect: "Allow"
+      #       Action:
+      #         - "ecr:PutImage"
+      #         - "ecr:InitiateLayerUpload"
+      #         - "ecr:UploadLayerPart"
+      #         - "ecr:CompleteLayerUpload"
+      #       Principal: { "Service": "codebuild.amazonaws.com" }
