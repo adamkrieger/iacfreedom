@@ -8,6 +8,8 @@ phases:
   build:
     commands:
       - cd orderservice
+      - export VERSION_NUM=$(python nextver.py iacf_order_service $MAJOR $MINOR)
+      - echo $VERSION_NUM
       - ./build.sh
-      - ./build_image.sh
-      - source ./tag_push.sh
+      - ./build_image.sh $VERSION_NUM
+      - source ./tag_push.sh $VERSION_NUM
