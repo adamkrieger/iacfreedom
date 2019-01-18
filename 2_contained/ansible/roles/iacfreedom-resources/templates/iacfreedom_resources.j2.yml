@@ -49,6 +49,7 @@ Resources:
               - "*"
           - Effect: "Allow"
             Action:
+              - "ecr:ListImages"
               - "ecr:PutImage"
               - "ecr:InitiateLayerUpload"
               - "ecr:UploadLayerPart"
